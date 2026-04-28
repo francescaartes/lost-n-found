@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function ItemModal({
     item,
@@ -35,6 +36,40 @@ export default function ItemModal({
     if (!item) return null;
 
     const hasImages = images.length > 0;
+
+    const handleContact = () => {
+        const method = item.contactPreference?.method;
+        const value = item.contactPreference?.value;
+
+        if (!value) return;
+
+        switch (method) {
+            case "Social Media":
+                const url = value.startsWith("http")
+                    ? value
+                    : `https://${value}`;
+                window.open(url, "_blank", "noopener,noreferrer");
+                break;
+
+            case "Email":
+                window.location.href = `mailto:${value}?subject=Regarding your post on Lost & Found: ${item.title}`;
+                break;
+
+            case "Phone":
+                navigator.clipboard.writeText(value);
+                toast("Copied to Clipboard!", {
+                    description: (
+                        <span className="text-primary font-medium">
+                            {value} has been copied to your clipboard.
+                        </span>
+                    ),
+                });
+                break;
+            default:
+                console.warn("Unknown contact method");
+                break;
+        }
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -166,7 +201,7 @@ export default function ItemModal({
 
                         <div className="flex items-center gap-2">
                             <User className="h-4 w-4 shrink-0" />
-                            Anonymous User
+                            {item.postedBy?.name || "User"}
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -182,9 +217,9 @@ export default function ItemModal({
                         </h4>
 
                         <div className="space-y-2 text-sm text-primary/90">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 overflow-hidden">
                                 <MessageCircle className="h-4 w-4 shrink-0" />
-                                hidden@email.com
+                                {item.contactPreference?.value}
                             </div>
                         </div>
                     </div>
@@ -200,7 +235,10 @@ export default function ItemModal({
                         >
                             Close
                         </Button>
-                        <Button className="bg-primary text-primary-foreground hover:opacity-90">
+                        <Button
+                            onClick={handleContact}
+                            className="bg-primary text-primary-foreground hover:opacity-90"
+                        >
                             Contact Poster
                         </Button>
                     </div>

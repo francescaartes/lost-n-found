@@ -23,10 +23,10 @@ import {
 } from "@/components/ui/select";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
 import { Separator } from "@/components/ui/separator";
-
 import { MapPin, Search, Package } from "lucide-react";
+
+import api from "@/lib/api";
 
 export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
     const [loading, setLoading] = useState(false);
@@ -67,26 +67,24 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/items", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+            const res = await api.post("/items", formData);
+
+            console.log(res.data);
+            setFormData({
+                title: "",
+                category: "Other",
+                description: "",
+                type: "Lost",
+                location: { name: "", coordinates: { lat: 0, lng: 0 } },
+                contactPreference: { method: "Email", value: "" },
             });
 
-            if (res.ok) {
-                setFormData({
-                    title: "",
-                    category: "Other",
-                    description: "",
-                    type: "Lost",
-                    location: { name: "", coordinates: { lat: 0, lng: 0 } },
-                    contactPreference: { method: "Email", value: "" },
-                });
-
-                onRefresh();
-            }
-        } catch (error) {
-            console.error("Submission failed:", error);
+            onRefresh();
+        } catch (error: any) {
+            console.error(
+                "Submission failed:",
+                error.response?.data?.message || error.message,
+            );
         } finally {
             setLoading(false);
         }
@@ -198,8 +196,6 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
 
                         {/* Location Name */}
                         <div className="space-y-2">
-                            <Label>Location Name</Label>
-
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 

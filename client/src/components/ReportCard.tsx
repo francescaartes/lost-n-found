@@ -57,7 +57,8 @@ export default function ReportCard({ item }: { item: any }) {
                                 {new Date(item.createdAt).toLocaleDateString()}
                             </div>
                             <div className="flex items-center gap-2">
-                                <User className="h-3 w-3 shrink-0" /> Anonymous
+                                <User className="h-3 w-3 shrink-0" />{" "}
+                                {item.postedBy?.name || "User"}
                             </div>
                             <div className="flex items-center gap-2">
                                 <Bookmark className="h-3 w-3 shrink-0" />{" "}
