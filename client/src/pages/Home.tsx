@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ReportCard from "@/components/ReportCard";
+import api from "@/lib/api";
 
 export default function Home() {
     const [items, setItems] = useState([]);
@@ -7,9 +8,11 @@ export default function Home() {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const res = await fetch("/api/items");
-                const data = await res.json();
-                setItems(data);
+                const res = await api.get("items");
+
+                console.log(res.data);
+
+                setItems(res.data);
             } catch (error) {
                 console.error("Error fetching items:", error);
             }
@@ -28,9 +31,6 @@ export default function Home() {
                         Latest lost and found reports from the community.
                     </p>
                 </div>
-                <span className="text-sm bg-secondary text-secondary-foreground px-3 py-1 rounded-full border border-border">
-                    {items.length} Reports
-                </span>
             </div>
 
             <div className="grid gap-4">
