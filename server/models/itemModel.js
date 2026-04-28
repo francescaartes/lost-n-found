@@ -29,12 +29,12 @@ const itemSchema = new mongoose.Schema(
         postedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: false,
+            required: true,
         },
         contactPreference: {
             method: {
                 type: String,
-                enum: ["Email", "Phone", "Messenger"],
+                enum: ["Email", "Phone", "Social Media"],
                 required: true,
             },
             value: { type: String, required: true },
