@@ -1,5 +1,11 @@
-import { useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useState, useEffect } from "react";
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    useMapEvents,
+    useMap,
+} from "react-leaflet";
 import L from "leaflet";
 
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -26,22 +32,49 @@ function MapEvents({
     return null;
 }
 
+function MapUpdater({ center }: { center: [number, number] }) {
+    const map = useMap();
+    useEffect(() => {
+        map.setView(center, map.getZoom());
+    }, [center, map]);
+    return null;
+}
+
 interface LocationMapProps {
     onSelect: (lat: number, lng: number) => void;
-    defaultLat?: number;
-    defaultLng?: number;
+    initialPosition?: { lat: number; lng: number } | null;
 }
 
 export default function LocationMap({
     onSelect,
-    defaultLat = 14.5995,
-    defaultLng = 121.0366,
+    initialPosition = null,
 }: LocationMapProps) {
-    // Defaulting to Manila coordinates, you can change this to PUP coordinates!
     const [position, setPosition] = useState<{
         lat: number;
         lng: number;
-    } | null>(null);
+    } | null>(initialPosition);
+
+    const [mapCenter, setMapCenter] = useState<[number, number]>(
+        initialPosition && initialPosition.lat !== 0
+            ? [initialPosition.lat, initialPosition.lng]
+            : [14.5995, 121.0366],
+    );
+
+    useEffect(() => {
+        if (initialPosition && initialPosition.lat !== 0) return;
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    setMapCenter([latitude, longitude]);
+                },
+                (err) => {
+                    console.warn("Geolocation denied or failed:", err.message);
+                },
+            );
+        }
+    }, [initialPosition]);
 
     const handleSelect = (lat: number, lng: number) => {
         setPosition({ lat, lng });
@@ -49,22 +82,28 @@ export default function LocationMap({
     };
 
     return (
-        <div className="h-75 w-full rounded-md overflow-hidden border border-zinc-200 z-0 relative">
+        <div className="h-full min-h-62.5 w-full rounded-md overflow-hidden border border-zinc-200 z-0 relative">
             <MapContainer
-                center={[defaultLat, defaultLng]}
+                center={mapCenter}
                 zoom={14}
-                style={{ height: "100%", width: "100%" }}
+                style={{ height: "100%", width: "100%", minHeight: "250px" }}
                 scrollWheelZoom={true}
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
+                <MapUpdater center={mapCenter} />
+
                 <MapEvents onLocationSelect={handleSelect} />
-                {position && <Marker position={[position.lat, position.lng]} />}
+
+                {position && position.lat !== 0 && (
+                    <Marker position={[position.lat, position.lng]} />
+                )}
             </MapContainer>
 
-            {!position && (
+            {!position?.lat && (
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 z-400 bg-white/90 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm pointer-events-none text-zinc-700">
                     Click the map to drop a pin
                 </div>

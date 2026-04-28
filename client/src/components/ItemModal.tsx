@@ -264,9 +264,21 @@ export default function ItemModal({
 
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 shrink-0" />
-                                    <span className="truncate">
-                                        {item.location?.name}
-                                    </span>
+                                    {item.location?.coordinates?.lat ? (
+                                        <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${item.location.coordinates.lat},${item.location.coordinates.lng}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="truncate hover:underline cursor-pointer"
+                                        >
+                                            {item.location?.name}
+                                        </a>
+                                    ) : (
+                                        <span className="truncate">
+                                            {item.location?.name ||
+                                                "Unknown Location"}
+                                        </span>
+                                    )}
                                 </div>
 
                                 <div className="flex items-center gap-2">

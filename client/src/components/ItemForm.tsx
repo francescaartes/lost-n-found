@@ -282,6 +282,9 @@ export default function ItemForm({
                         <div className="space-y-2">
                             <div className="w-full h-65 rounded-lg border overflow-hidden">
                                 <LocationMap
+                                    initialPosition={
+                                        formData.location.coordinates
+                                    }
                                     onSelect={(lat, lng) => {
                                         setFormData({
                                             ...formData,
