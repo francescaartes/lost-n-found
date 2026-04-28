@@ -223,7 +223,7 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
 
                         {/* Map Picker */}
                         <div className="space-y-2">
-                            <div className="w-full h-[260px] rounded-lg border overflow-hidden">
+                            <div className="w-full h-65 rounded-lg border overflow-hidden">
                                 <LocationMap
                                     onSelect={(lat, lng) => {
                                         setFormData({

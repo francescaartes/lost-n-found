@@ -40,7 +40,7 @@ export default function ItemModal({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent
                 className="
-                    sm:max-w-[780px]
+                    sm:max-w-195
                     max-h-[85vh]
                     overflow-hidden
                     p-0
