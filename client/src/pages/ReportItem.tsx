@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import ItemForm from "@/components/ItemForm";
 
-export default function Report() {
+export default function ReportItem() {
     const navigate = useNavigate();
 
     const handleSuccess = () => {

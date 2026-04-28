@@ -3,7 +3,7 @@ import { MapPin, Calendar, User, Bookmark, Image } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import ItemModal from "./ItemModal";
 
-export default function ReportCard({ item }: { item: any }) {
+export default function ItemCard({ item }: { item: any }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (

@@ -25,7 +25,6 @@ export default function Sidebar() {
         { path: "/", label: "Home", icon: Home },
         { path: "/report", label: "Report an Item", icon: PlusSquare },
         { path: "/my-reports", label: "My Reports", icon: FileText },
-        { path: "/saved", label: "Saved Items", icon: Bookmark },
     ];
 
     const handleLogout = async () => {

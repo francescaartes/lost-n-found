@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import Home from "@/pages/Home";
-import Report from "@/pages/Report";
-import Dashboard from "@/pages/Dashboard";
+import ReportItem from "@/pages/ReportItem";
+import MyReports from "@/pages/MyReports";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -34,19 +34,11 @@ export default function App() {
                                                 />
                                                 <Route
                                                     path="/report"
-                                                    element={<Report />}
+                                                    element={<ReportItem />}
                                                 />
                                                 <Route
                                                     path="/my-reports"
-                                                    element={
-                                                        <Dashboard title="My Reports" />
-                                                    }
-                                                />
-                                                <Route
-                                                    path="/saved"
-                                                    element={
-                                                        <Dashboard title="Saved Items" />
-                                                    }
+                                                    element={<MyReports />}
                                                 />
                                             </Routes>
                                         </main>
