@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,13 +25,22 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Search, Package } from "lucide-react";
+import { toast } from "sonner";
 
 import api from "@/lib/api";
 
-export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
+export default function ItemForm({
+    onRefresh,
+    initialData,
+    onCancel,
+}: {
+    onRefresh: () => void;
+    initialData?: any;
+    onCancel?: () => void;
+}) {
     const [loading, setLoading] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const defaultState = {
         title: "",
         category: "Other",
         description: "",
@@ -47,7 +56,54 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
             method: "Email",
             value: "",
         },
+    };
+
+    const [formData, setFormData] = useState(() => {
+        if (initialData) {
+            return {
+                title: initialData.title || "",
+                category: initialData.category || "Other",
+                description: initialData.description || "",
+                type: initialData.type || "Lost",
+                location: {
+                    name: initialData.location?.name || "",
+                    coordinates: {
+                        lat: initialData.location?.coordinates?.lat || 0,
+                        lng: initialData.location?.coordinates?.lng || 0,
+                    },
+                },
+                contactPreference: {
+                    method: initialData.contactPreference?.method || "Email",
+                    value: initialData.contactPreference?.value || "",
+                },
+            };
+        }
+        return defaultState;
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                title: initialData.title || "",
+                category: initialData.category || "Other",
+                description: initialData.description || "",
+                type: initialData.type || "Lost",
+                location: {
+                    name: initialData.location?.name || "",
+                    coordinates: {
+                        lat: initialData.location?.coordinates?.lat || 0,
+                        lng: initialData.location?.coordinates?.lng || 0,
+                    },
+                },
+                contactPreference: {
+                    method: initialData.contactPreference?.method || "Email",
+                    value: initialData.contactPreference?.value || "",
+                },
+            });
+        } else {
+            setFormData(defaultState);
+        }
+    }, [initialData]);
 
     const categories = [
         "Electronics",
@@ -67,35 +123,40 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
         setLoading(true);
 
         try {
-            const res = await api.post("/items", formData);
-
-            console.log(res.data);
-            setFormData({
-                title: "",
-                category: "Other",
-                description: "",
-                type: "Lost",
-                location: { name: "", coordinates: { lat: 0, lng: 0 } },
-                contactPreference: { method: "Email", value: "" },
-            });
+            if (initialData?._id) {
+                // EDIT MODE
+                await api.put(`/items/${initialData._id}`, formData);
+                toast.success("Item updated successfully!");
+                if (onCancel) onCancel(); // Close modal if editing
+            } else {
+                // CREATE MODE
+                await api.post("/items", formData);
+                toast.success("Item reported successfully!");
+                setFormData(defaultState); // Reset form only if creating
+            }
 
             onRefresh();
         } catch (error: any) {
-            console.error(
-                "Submission failed:",
-                error.response?.data?.message || error.message,
+            toast.error(
+                error.response?.data?.message || "Something went wrong",
             );
         } finally {
             setLoading(false);
         }
     };
 
+    const isEditing = !!initialData;
+
     return (
         <Card className="w-full max-w-4xl mx-auto shadow-sm border-muted">
             <CardHeader>
-                <CardTitle>Report an Item</CardTitle>
+                <CardTitle>
+                    {isEditing ? "Edit Report" : "Report an Item"}
+                </CardTitle>
                 <CardDescription>
-                    Submit details to help reunite items with their owners.
+                    {isEditing
+                        ? "Update your item details below."
+                        : "Submit details to help reunite items with their owners."}
                 </CardDescription>
             </CardHeader>
 
@@ -270,9 +331,10 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
                                 }
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select method" />
+                                    <SelectValue placeholder="Select method">
+                                        {formData.contactPreference.method}
+                                    </SelectValue>
                                 </SelectTrigger>
-
                                 <SelectContent>
                                     {contactMethods.map((method) => (
                                         <SelectItem key={method} value={method}>
@@ -303,13 +365,30 @@ export default function ItemForm({ onRefresh }: { onRefresh: () => void }) {
                     </div>
                 </CardContent>
 
-                <CardFooter className="space-y-5">
+                <CardFooter
+                    className={`flex flex-row items-center gap-3 ${isEditing ? "pt-6" : "pt-0"}`}
+                >
+                    {isEditing && (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={onCancel}
+                            disabled={loading}
+                        >
+                            Cancel
+                        </Button>
+                    )}
                     <Button
                         type="submit"
-                        className="w-full mt-4"
+                        className={isEditing ? "flex-1" : "w-full mt-4"}
                         disabled={loading}
                     >
-                        {loading ? "Submitting..." : "Submit Report"}
+                        {loading
+                            ? "Saving..."
+                            : isEditing
+                              ? "Save Changes"
+                              : "Submit Report"}
                     </Button>
                 </CardFooter>
             </form>

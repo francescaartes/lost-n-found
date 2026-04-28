@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useItems } from "@/hooks/useItems";
 import ItemCard from "./ItemCard";
+import ItemModal from "./ItemModal";
 import { Loader2, Inbox } from "lucide-react";
 
 interface ItemFeedProps {
@@ -8,7 +10,8 @@ interface ItemFeedProps {
 }
 
 export default function ItemFeed({ scope, emptyMessage }: ItemFeedProps) {
-    const { items, loading, error } = useItems(scope);
+    const { items, loading, error, refresh } = useItems(scope);
+    const [selectedItem, setSelectedItem] = useState<any>(null);
 
     if (loading) {
         return (
@@ -33,10 +36,23 @@ export default function ItemFeed({ scope, emptyMessage }: ItemFeedProps) {
     }
 
     return (
-        <div className="grid gap-4">
-            {items.map((item: any) => (
-                <ItemCard key={item._id} item={item} />
-            ))}
-        </div>
+        <>
+            <div className="grid gap-4">
+                {items.map((item: any) => (
+                    <ItemCard
+                        key={item._id}
+                        item={item}
+                        onClick={() => setSelectedItem(item)}
+                    />
+                ))}
+            </div>
+
+            <ItemModal
+                item={selectedItem}
+                isOpen={!!selectedItem}
+                onClose={() => setSelectedItem(null)}
+                onRefresh={refresh}
+            />
+        </>
     );
 }

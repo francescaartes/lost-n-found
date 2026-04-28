@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "@/lib/api";
 
 type FeedScope = "all" | "my-reports";
@@ -8,7 +8,7 @@ export function useItems(scope: FeedScope = "all") {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         try {
             setLoading(true);
             const endpoints = {
@@ -24,11 +24,11 @@ export function useItems(scope: FeedScope = "all") {
         } finally {
             setLoading(false);
         }
-    };
+    }, [scope]);
 
     useEffect(() => {
         fetchItems();
-    }, [scope]);
+    }, [fetchItems]);
 
     return { items, loading, error, refresh: fetchItems };
 }

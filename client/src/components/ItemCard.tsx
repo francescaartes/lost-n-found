@@ -1,15 +1,17 @@
-import { useState } from "react";
 import { MapPin, Calendar, User, Bookmark, Image } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import ItemModal from "./ItemModal";
 
-export default function ItemCard({ item }: { item: any }) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
+export default function ItemCard({
+    item,
+    onClick,
+}: {
+    item: any;
+    onClick: () => void;
+}) {
     return (
         <>
             <Card
-                onClick={() => setIsModalOpen(true)}
+                onClick={onClick}
                 className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer group border-border bg-background"
             >
                 <CardContent className="p-0 flex flex-col sm:flex-row">
@@ -35,7 +37,7 @@ export default function ItemCard({ item }: { item: any }) {
                                             : "bg-destructive/15 text-destructive"
                                     }`}
                                 >
-                                    {item.status || "Unresolved"}
+                                    {item.status}
                                 </span>
                             </div>
                             <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
@@ -68,12 +70,6 @@ export default function ItemCard({ item }: { item: any }) {
                     </div>
                 </CardContent>
             </Card>
-
-            <ItemModal
-                item={item}
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
         </>
     );
 }
