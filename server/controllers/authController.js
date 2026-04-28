@@ -26,7 +26,10 @@ export const register = async (req, res) => {
             expiresIn: "7d",
         });
 
-        res.status(201).json({ user: { id: newUser._id, name, email }, token });
+        res.status(201).json({
+            user: { _id: newUser._id, name, email },
+            token,
+        });
     } catch (error) {
         console.error("REGISTER ERROR:", error);
         res.status(500).json({ message: "Something went wrong" });
@@ -56,7 +59,7 @@ export const login = async (req, res) => {
         })
             .status(200)
             .json({
-                user: { id: user._id, name: user.name, email: user.email },
+                user: { _id: user._id, name: user.name, email: user.email },
             });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
