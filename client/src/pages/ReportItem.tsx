@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import ItemForm from "@/components/ItemForm";
+import ItemForm from "@/components/ReportForm/ItemForm";
 
 export default function ReportItem() {
     const navigate = useNavigate();

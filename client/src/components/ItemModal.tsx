@@ -28,7 +28,7 @@ import { toast } from "sonner";
 
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import ItemForm from "./ItemForm";
+import ItemForm from "./ReportForm/ItemForm";
 
 export default function ItemModal({
     item,
