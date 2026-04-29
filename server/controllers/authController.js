@@ -26,9 +26,19 @@ export const register = async (req, res) => {
             expiresIn: "7d",
         });
 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
         res.status(201).json({
-            user: { _id: newUser._id, name, email },
-            token,
+            user: {
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+            },
         });
     } catch (error) {
         console.error("REGISTER ERROR:", error);
@@ -55,7 +65,7 @@ export const login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
             .status(200)
             .json({

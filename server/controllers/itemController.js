@@ -105,7 +105,7 @@ export const deleteItem = async (req, res) => {
         }
 
         await Item.findByIdAndDelete(req.params.id);
-        res.json({ message: "Item deleted successfully" }); // Added response
+        res.json({ message: "Item deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }
@@ -121,5 +121,23 @@ export const getMyItems = async (req, res) => {
         res.status(200).json(items);
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch your reports" });
+    }
+};
+
+// Get an item
+export const getItem = async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id).populate(
+            "postedBy",
+            "name email",
+        );
+
+        if (!item) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+
+        res.json(item);
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };

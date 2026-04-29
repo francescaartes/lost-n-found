@@ -6,6 +6,7 @@ import ReportItem from "@/pages/ReportItem";
 import MyReports from "@/pages/MyReports";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import ItemPage from "@/pages/ItemPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -39,6 +40,10 @@ export default function App() {
                                                 <Route
                                                     path="/my-reports"
                                                     element={<MyReports />}
+                                                />
+                                                <Route
+                                                    path="/report/:id"
+                                                    element={<ItemPage />}
                                                 />
                                             </Routes>
                                         </main>
