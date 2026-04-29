@@ -24,10 +24,52 @@ import {
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Search, Package } from "lucide-react";
+import { MapPin, Search, Package, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import api from "@/lib/api";
+
+const CATEGORIES = [
+    "Electronics",
+    "Pets",
+    "Documents",
+    "ID",
+    "Wallet",
+    "Keys",
+    "Clothing",
+    "Other",
+];
+const CONTACT_METHODS = ["Email", "Phone", "Social Media"];
+
+const DEFAULT_STATE = {
+    title: "",
+    category: "Other",
+    description: "",
+    type: "Lost",
+    location: { name: "", coordinates: { lat: 0, lng: 0 } },
+    contactPreference: { method: "Email", value: "" },
+};
+
+const mapDataToState = (data?: any) => {
+    if (!data) return DEFAULT_STATE;
+    return {
+        title: data.title || "",
+        category: data.category || "Other",
+        description: data.description || "",
+        type: data.type || "Lost",
+        location: {
+            name: data.location?.name || "",
+            coordinates: {
+                lat: data.location?.coordinates?.lat || 0,
+                lng: data.location?.coordinates?.lng || 0,
+            },
+        },
+        contactPreference: {
+            method: data.contactPreference?.method || "Email",
+            value: data.contactPreference?.value || "",
+        },
+    };
+};
 
 export default function ItemForm({
     onRefresh,
@@ -40,99 +82,79 @@ export default function ItemForm({
 }) {
     const [loading, setLoading] = useState(false);
 
-    const defaultState = {
-        title: "",
-        category: "Other",
-        description: "",
-        type: "Lost",
-        location: {
-            name: "",
-            coordinates: {
-                lat: 0,
-                lng: 0,
-            },
-        },
-        contactPreference: {
-            method: "Email",
-            value: "",
-        },
-    };
+    const [existingImages, setExistingImages] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
 
-    const [formData, setFormData] = useState(() => {
-        if (initialData) {
-            return {
-                title: initialData.title || "",
-                category: initialData.category || "Other",
-                description: initialData.description || "",
-                type: initialData.type || "Lost",
-                location: {
-                    name: initialData.location?.name || "",
-                    coordinates: {
-                        lat: initialData.location?.coordinates?.lat || 0,
-                        lng: initialData.location?.coordinates?.lng || 0,
-                    },
-                },
-                contactPreference: {
-                    method: initialData.contactPreference?.method || "Email",
-                    value: initialData.contactPreference?.value || "",
-                },
-            };
-        }
-        return defaultState;
-    });
+    const [formData, setFormData] = useState(() => mapDataToState(initialData));
 
     useEffect(() => {
-        if (initialData) {
-            setFormData({
-                title: initialData.title || "",
-                category: initialData.category || "Other",
-                description: initialData.description || "",
-                type: initialData.type || "Lost",
-                location: {
-                    name: initialData.location?.name || "",
-                    coordinates: {
-                        lat: initialData.location?.coordinates?.lat || 0,
-                        lng: initialData.location?.coordinates?.lng || 0,
-                    },
-                },
-                contactPreference: {
-                    method: initialData.contactPreference?.method || "Email",
-                    value: initialData.contactPreference?.value || "",
-                },
-            });
+        setFormData(mapDataToState(initialData));
+
+        if (initialData?.images?.length > 0) {
+            setExistingImages(initialData.images);
+            setPreviews(initialData.images);
         } else {
-            setFormData(defaultState);
+            setExistingImages([]);
+            setPreviews([]);
         }
+        setSelectedFiles([]);
     }, [initialData]);
 
-    const categories = [
-        "Electronics",
-        "Pets",
-        "Documents",
-        "ID",
-        "Wallet",
-        "Keys",
-        "Clothing",
-        "Other",
-    ];
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
 
-    const contactMethods = ["Email", "Phone", "Social Media"];
+        const filesArray = Array.from(e.target.files);
+        if (
+            existingImages.length + selectedFiles.length + filesArray.length >
+            3
+        ) {
+            toast.error("You can only upload up to 3 images total");
+            return;
+        }
+
+        setSelectedFiles((prev) => [...prev, ...filesArray]);
+        setPreviews((prev) => [
+            ...prev,
+            ...filesArray.map((f) => URL.createObjectURL(f)),
+        ]);
+    };
+
+    const removeImage = (index: number) => {
+        if (index < existingImages.length) {
+            setExistingImages((prev) => prev.filter((_, i) => i !== index));
+        } else {
+            const fileIndex = index - existingImages.length;
+            setSelectedFiles((prev) => prev.filter((_, i) => i !== fileIndex));
+        }
+        setPreviews((prev) => prev.filter((_, i) => i !== index));
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
+            const data = new FormData();
+            data.append("title", formData.title);
+            data.append("category", formData.category);
+            data.append("description", formData.description);
+            data.append("type", formData.type);
+            data.append("location", JSON.stringify(formData.location));
+            data.append(
+                "contactPreference",
+                JSON.stringify(formData.contactPreference),
+            );
+
+            data.append("existingImages", JSON.stringify(existingImages));
+            selectedFiles.forEach((file) => data.append("images", file));
+
             if (initialData?._id) {
-                // EDIT MODE
-                await api.put(`/items/${initialData._id}`, formData);
-                toast.success("Item updated successfully!");
-                if (onCancel) onCancel(); // Close modal if editing
+                await api.put(`/items/${initialData._id}`, data);
+                toast.success("Item updated!");
             } else {
-                // CREATE MODE
-                await api.post("/items", formData);
-                toast.success("Item reported successfully!");
-                setFormData(defaultState); // Reset form only if creating
+                await api.post("/items", data);
+                toast.success("Item reported!");
             }
 
             onRefresh();
@@ -220,7 +242,7 @@ export default function ItemForm({
                                 </SelectTrigger>
 
                                 <SelectContent>
-                                    {categories.map((cat) => (
+                                    {CATEGORIES.map((cat) => (
                                         <SelectItem key={cat} value={cat}>
                                             {cat}
                                         </SelectItem>
@@ -246,6 +268,53 @@ export default function ItemForm({
                             }
                             required
                         />
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                        <Label>Upload Images (Max 3)</Label>
+
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                            {previews.map((url, index) => (
+                                <div
+                                    key={url}
+                                    className="relative aspect-square rounded-md border overflow-hidden group"
+                                >
+                                    <img
+                                        src={url}
+                                        alt="preview"
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        className="absolute top-0 right-0 bg-primary text-background text-p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+                            ))}
+
+                            {previews.length < 3 && (
+                                <label className="aspect-square flex flex-col items-center justify-center border-2 border-dashed rounded-md cursor-pointer hover:bg-muted transition-colors">
+                                    <Plus
+                                        size={24}
+                                        className="text-muted-foreground"
+                                    />
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground mt-1">
+                                        Add
+                                    </span>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                    />
+                                </label>
+                            )}
+                        </div>
                     </div>
 
                     <Separator />
@@ -339,7 +408,7 @@ export default function ItemForm({
                                     </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {contactMethods.map((method) => (
+                                    {CONTACT_METHODS.map((method) => (
                                         <SelectItem key={method} value={method}>
                                             {method}
                                         </SelectItem>

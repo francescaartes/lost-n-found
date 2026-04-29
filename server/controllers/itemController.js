@@ -15,8 +15,19 @@ export const getItems = async (req, res) => {
 // Create a new item
 export const createItem = async (req, res) => {
     try {
+        // console.log("FILES FROM CLOUDINARY:", req.files);
+
+        const imageUrls = req.files
+            ? req.files.map((file) => file.secure_url)
+            : [];
+        const location = JSON.parse(req.body.location);
+        const contactPreference = JSON.parse(req.body.contactPreference);
+
         const newItem = await Item.create({
             ...req.body,
+            location,
+            contactPreference,
+            images: imageUrls,
             postedBy: req.user.id,
         });
 
@@ -41,9 +52,33 @@ export const updateItem = async (req, res) => {
             });
         }
 
+        const existingImages = req.body.existingImages
+            ? JSON.parse(req.body.existingImages)
+            : item.images;
+
+        let newImageUrls = [];
+        if (req.files && req.files.length > 0) {
+            newImageUrls = req.files.map((file) => file.secure_url);
+        }
+
+        const allImages = [...existingImages, ...newImageUrls];
+
+        const location = req.body.location
+            ? JSON.parse(req.body.location)
+            : item.location;
+
+        const contactPreference = req.body.contactPreference
+            ? JSON.parse(req.body.contactPreference)
+            : item.contactPreference;
+
         const updatedItem = await Item.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            {
+                ...req.body,
+                location,
+                contactPreference,
+                images: allImages,
+            },
             { returnDocument: "after", runValidators: true },
         );
 

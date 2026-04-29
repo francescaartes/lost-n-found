@@ -49,10 +49,6 @@ export default function ItemModal({
     const { user } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
     const isOwner = user?._id === item.postedBy?._id;
-
-    console.log(`User : ${user?._id}`);
-    console.log(`Posted by : ${item.postedBy?._id}`);
-
     const hasImages = images.length > 0;
 
     const handleDelete = async () => {

@@ -16,7 +16,22 @@ export default function ItemCard({
             >
                 <CardContent className="p-0 flex flex-col sm:flex-row">
                     <div className="w-full sm:w-48 h-48 sm:h-auto bg-muted/50 flex items-center justify-center border-r border-border group-hover:bg-muted transition-colors">
-                        <Image className="h-12 w-12 text-muted-foreground/50" />
+                        {item.images && item.images.length > 0 ? (
+                            <div className="w-full h-48 bg-muted relative">
+                                <img
+                                    src={item.images[0]}
+                                    alt={item.title}
+                                    className="w-full h-full object-cover"
+                                />
+                                {item.images?.length > 1 && (
+                                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md">
+                                        + {item.images.length - 1} more
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <Image className="h-12 w-12 text-muted-foreground/50" />
+                        )}
                     </div>
                     <div className="p-6 flex-1 flex flex-col justify-between bg-card text-card-foreground">
                         <div>

@@ -3,7 +3,6 @@ import {
     Home,
     PlusSquare,
     FileText,
-    Bookmark,
     LogOut,
     MoreVertical,
     User,

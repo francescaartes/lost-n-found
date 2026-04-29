@@ -44,6 +44,11 @@ const itemSchema = new mongoose.Schema(
             enum: ["Unresolved", "Resolved"],
             default: "Unresolved",
         },
+        images: {
+            type: [String],
+            default: [],
+            required: true,
+        },
     },
     { timestamps: true },
 );
