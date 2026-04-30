@@ -48,7 +48,7 @@ export default function Login() {
             <Card className="w-full max-w-lg shadow-lg border-border bg-card">
                 <CardHeader className="space-y-1 flex flex-col items-center">
                     <div className="p-3 bg-primary/10 rounded-full mb-2">
-                        <UndoDot className="h-8 w-8 text-primary" />
+                        <UndoDot className="h-8 w-8 text-primary stroke-[2.5px]" />
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight">
                         Welcome back

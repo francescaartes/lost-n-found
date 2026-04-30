@@ -86,10 +86,10 @@ export default function SidebarContent({ onNavigate }: SidebarContentProps) {
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" className="w-56 mb-2">
-                            <DropdownMenuItem className="cursor-pointer">
+                            {/* <DropdownMenuItem className="cursor-pointer">
                                 <User className="mr-2 h-4 w-4" />
                                 <span>View Profile</span>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                                 onClick={handleLogout}
                                 className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
