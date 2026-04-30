@@ -5,7 +5,7 @@ import {
     FileText,
     LogOut,
     MoreVertical,
-    User,
+    // User,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
