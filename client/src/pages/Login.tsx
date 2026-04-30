@@ -16,7 +16,7 @@ import {
     CardFooter,
 } from "@/components/ui/card";
 
-import { ShieldAlert, Loader2 } from "lucide-react";
+import { UndoDot, Loader2 } from "lucide-react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -48,13 +48,13 @@ export default function Login() {
             <Card className="w-full max-w-lg shadow-lg border-border bg-card">
                 <CardHeader className="space-y-1 flex flex-col items-center">
                     <div className="p-3 bg-primary/10 rounded-full mb-2">
-                        <ShieldAlert className="h-8 w-8 text-primary" />
+                        <UndoDot className="h-8 w-8 text-primary" />
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight">
-                        Welcome Back
+                        Welcome back
                     </CardTitle>
                     <CardDescription>
-                        Enter your credentials to access your account
+                        Login with your TraceBack account
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
@@ -106,7 +106,7 @@ export default function Login() {
                                 to="/register"
                                 className="text-primary hover:underline font-semibold"
                             >
-                                Create one
+                                Sign up
                             </Link>
                         </p>
                     </CardFooter>

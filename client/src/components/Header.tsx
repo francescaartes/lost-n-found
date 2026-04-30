@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShieldAlert } from "lucide-react";
+import { UndoDot } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,8 +42,8 @@ export default function Header() {
 
                 <Link to="/">
                     <div className="flex items-center gap-2 text-primary font-bold text-xl">
-                        <ShieldAlert className="h-6 w-6" />
-                        <span className="sm:inline-block">Lost & Found</span>
+                        <UndoDot className="h-6 w-6" />
+                        <span className="sm:inline-block">TraceBack</span>
                     </div>
                 </Link>
             </div>

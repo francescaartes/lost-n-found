@@ -127,7 +127,7 @@ export default function ItemActions({
                 onClick={onContact}
                 className="bg-primary text-primary-foreground hover:opacity-90 px-8"
             >
-                Contact Poster
+                Contact
             </Button>
         </div>
     );
