@@ -7,10 +7,15 @@ import { Loader2, Inbox } from "lucide-react";
 interface ItemFeedProps {
     scope: "all" | "my-reports";
     emptyMessage?: string;
+    filters?: any;
 }
 
-export default function ItemFeed({ scope, emptyMessage }: ItemFeedProps) {
-    const { items, loading, error, refresh } = useItems(scope);
+export default function ItemFeed({
+    scope,
+    emptyMessage,
+    filters,
+}: ItemFeedProps) {
+    const { items, loading, error, refresh } = useItems(scope, filters);
     const [selectedItem, setSelectedItem] = useState<any>(null);
 
     if (loading) {

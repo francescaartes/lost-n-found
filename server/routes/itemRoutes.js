@@ -14,9 +14,9 @@ const router = express.Router();
 
 router.get("/", getItems);
 router.get("/my-reports", protect, getMyItems);
-router.get("/:id", getItem);
-
 router.post("/", protect, upload.array("images", 3), createItem);
+
+router.get("/:id", getItem);
 router.put("/:id", protect, upload.array("images", 3), updateItem);
 
 router.delete("/:id", protect, deleteItem);

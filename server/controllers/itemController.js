@@ -3,9 +3,36 @@ import Item from "../models/itemModel.js";
 // Get all items
 export const getItems = async (req, res) => {
     try {
-        const items = await Item.find()
+        const { search, category, type, status } = req.query;
+
+        let query = {};
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { "location.name": { $regex: search, $options: "i" } },
+                { category: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        if (category && category !== "All") {
+            query.category = category;
+        }
+
+        if (type && type !== "All") {
+            query.type = type;
+        }
+
+        if (status && status !== "All") {
+            query.status = status;
+        } else if (!status) {
+            query.status = "Unresolved";
+        }
+
+        const items = await Item.find(query)
             .populate("postedBy", "name")
             .sort({ createdAt: -1 });
+
         res.status(200).json(items);
     } catch (error) {
         res.status(500).json({ message: error.message });

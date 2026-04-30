@@ -27,7 +27,6 @@ export default function ItemModal({
 
     const [isEditing, setIsEditing] = useState(false);
     const { user } = useAuth();
-    console.log(item);
 
     const { isProcessing, handleDelete, handleStatusUpdate, handleContact } =
         useItemActions(item, {
