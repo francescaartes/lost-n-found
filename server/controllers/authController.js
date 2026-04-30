@@ -23,14 +23,14 @@ export const register = async (req, res) => {
 
         // Create Token
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-            expiresIn: "7d",
+            expiresIn: "1d",
         });
 
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
         res.status(201).json({
@@ -41,7 +41,7 @@ export const register = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("REGISTER ERROR:", error);
+        // console.error("REGISTER ERROR:", error);
         res.status(500).json({ message: "Something went wrong" });
     }
 };
@@ -65,12 +65,12 @@ export const login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        })
-            .status(200)
-            .json({
-                user: { _id: user._id, name: user.name, email: user.email },
-            });
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });
+
+        res.status(200).json({
+            user: { _id: user._id, name: user.name, email: user.email },
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
     }
