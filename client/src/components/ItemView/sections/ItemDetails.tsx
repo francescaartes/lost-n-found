@@ -11,7 +11,7 @@ export default function ItemDetails({ item }: { item: any }) {
                 <MapPin className="h-4 w-4 shrink-0" />
                 {item.location?.coordinates?.lat ? (
                     <a
-                        href={`https://www.google.com/maps/search/?api=1&query=$${item.location.coordinates.lat},${item.location.coordinates.lng}`}
+                        href={`https://www.google.com/maps/search/?api=1&query=${item.location.coordinates.lat},${item.location.coordinates.lng}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="truncate hover:underline cursor-pointer"
