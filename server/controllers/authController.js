@@ -6,8 +6,10 @@ export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
+        const cleanEmail = email.toLowerCase().trim();
+
         // Check if user exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: cleanEmail });
         if (existingUser)
             return res.status(400).json({ message: "User already exists" });
 
@@ -50,7 +52,9 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const cleanEmail = email.toLowerCase().trim();
+
+        const user = await User.findOne({ email: cleanEmail });
         if (!user) return res.status(404).json({ message: "User not found" });
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
