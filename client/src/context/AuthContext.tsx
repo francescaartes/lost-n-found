@@ -6,6 +6,7 @@ import {
     type ReactNode,
 } from "react";
 import api from "@/lib/api";
+import { Loader2, UndoDot } from "lucide-react";
 
 interface User {
     _id: string;
@@ -51,9 +52,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex flex-col justify-center items-center h-screen">
+                <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+
+                <div className="flex items-center gap-2 text-primary font-bold text-xl">
+                    <UndoDot className="h-6 w-6 stroke-[2.5px]" />
+                    <span className="sm:inline-block">TraceBack</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <AuthContext.Provider value={{ user, loading, login, logout }}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 }
